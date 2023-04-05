@@ -1,4 +1,7 @@
 import Head from "next/head";
+import useSWR from "swr";
+import { ApiEndpoints } from "types";
+import { fetcher } from "utils";
 
 export default function Layout({
   children,
@@ -6,6 +9,9 @@ export default function Layout({
   children: React.ReactNode;
   home?: boolean;
 }) {
+  // TODO: Make this a reusable hook
+  const { data, error, isLoading } = useSWR(ApiEndpoints.BtcAddresses, fetcher);
+
   return (
     <div>
       <Head>

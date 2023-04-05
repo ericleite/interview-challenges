@@ -1604,6 +1604,7 @@ __metadata:
     postcss: ^8.4.21
     react: 18.2.0
     react-dom: 18.2.0
+    swr: ^2.1.2
     tailwindcss: ^3.2.4
     typescript: ^4.9.5
   languageName: unknown
@@ -1762,6 +1763,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"swr@npm:^2.1.2":
+  version: 2.1.2
+  resolution: "swr@npm:2.1.2"
+  dependencies:
+    use-sync-external-store: ^1.2.0
+  peerDependencies:
+    react: ^16.11.0 || ^17.0.0 || ^18.0.0
+  checksum: 90010a1a1ba3ecd699f64ef5e3de9a40c291e220803e811c46fabb858d908fd74039f4a2c668cf8fd21dbb3f9d9b3d8300915292ed9933d0e4bdac1193ba8fb8
+  languageName: node
+  linkType: hard
+
 "tailwindcss@npm:^3.2.4":
   version: 3.2.4
   resolution: "tailwindcss@npm:3.2.4"
@@ -1877,6 +1889,15 @@ __metadata:
   bin:
     browserslist-lint: cli.js
   checksum: 12db73b4f63029ac407b153732e7cd69a1ea8206c9100b482b7d12859cd3cd0bc59c602d7ae31e652706189f1acb90d42c53ab24a5ba563ed13aebdddc5561a0
+  languageName: node
+  linkType: hard
+
+"use-sync-external-store@npm:^1.2.0":
+  version: 1.2.0
+  resolution: "use-sync-external-store@npm:1.2.0"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: 5c639e0f8da3521d605f59ce5be9e094ca772bd44a4ce7322b055a6f58eeed8dda3c94cabd90c7a41fb6fa852210092008afe48f7038792fd47501f33299116a
   languageName: node
   linkType: hard
 

@@ -9,7 +9,7 @@ import {
   BtcAddressBalanceChartData,
   BtcAddressBalanceChartDataKey,
   BtcAddressBalanceChartDataPoint,
-} from "../../types.d";
+} from "types";
 
 const cachedData: BtcAddressBalanceChartData = [];
 

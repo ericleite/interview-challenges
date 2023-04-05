@@ -11,6 +11,12 @@ module.exports = {
       },
     });
 
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      types: `${__dirname}/types`,
+      utils: `${__dirname}/utils`,
+    };
+
     return config;
   },
 };
