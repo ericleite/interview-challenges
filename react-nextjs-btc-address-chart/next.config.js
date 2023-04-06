@@ -17,6 +17,12 @@ const nextConfig = {
       utils: `${__dirname}/utils`,
     };
 
+    config.resolve.fallback = {
+      fs: false,
+      path: false,
+      "stream/promises": false,
+    };
+
     return config;
   },
 };
