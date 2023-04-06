@@ -2,15 +2,18 @@ import { HomeLayout, Layout } from "components";
 import Head from "next/head";
 import { SWRConfig } from "swr";
 import {
-  BtcAddressChartData,
   ApiEndpoints,
+  BtcAddressChartData,
   BtcAddressesTimePeriod,
 } from "types";
 import { downsampleChartData, loadBtcAddressChartData } from "utils";
 
+const BTC_ADDRESSES_API_FALLBACK_KEY =
+  `${ApiEndpoints.BtcAddresses}?period=${BtcAddressesTimePeriod.All}` as const;
+
 interface Props {
   fallback: {
-    [ApiEndpoints.BtcAddresses]: BtcAddressChartData;
+    [BTC_ADDRESSES_API_FALLBACK_KEY]: BtcAddressChartData;
   };
 }
 
@@ -33,7 +36,7 @@ export async function getStaticProps() {
   return {
     props: {
       fallback: {
-        [ApiEndpoints.BtcAddresses]: downsampledChartData,
+        [BTC_ADDRESSES_API_FALLBACK_KEY]: downsampledChartData,
       },
     },
   };

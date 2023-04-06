@@ -16,6 +16,7 @@ import { Line } from "react-chartjs-2";
 import { BtcAddressChartData } from "types";
 import { DEFAULT_LINE_CHART_OPTIONS } from "../constants";
 import styles from "./AddressBalanceChart.module.css";
+import clsx from "clsx";
 
 ChartJS.register(
   CategoryScale,
@@ -38,12 +39,17 @@ const COLORS = [
 ];
 
 interface Props {
+  className?: string;
   data: BtcAddressChartData;
   height?: string;
   timeUnit?: TimeUnit;
 }
 
-export default function AddressBalanceChart({ data, height, timeUnit }: Props) {
+export default function AddressBalanceChart({
+  className,
+  data,
+  timeUnit,
+}: Props) {
   const chartData = useMemo(() => {
     return {
       labels: data?.labels || [],
@@ -75,14 +81,8 @@ export default function AddressBalanceChart({ data, height, timeUnit }: Props) {
     };
   }, [timeUnit]);
 
-  const containerStyle = useMemo(() => {
-    return {
-      height,
-    };
-  }, [height]);
-
   return (
-    <div className={styles.container} style={containerStyle}>
+    <div className={clsx(styles.container, className)}>
       <Line options={chartOptions} data={chartData} />
     </div>
   );
