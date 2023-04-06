@@ -9,9 +9,15 @@ export default function HomeLayout() {
   // TODO: Make this a reusable hook
   const { data, error, isLoading } = useSWR(ApiEndpoints.BtcAddresses, fetcher);
 
-  return (
-    <section className={styles.container}>
-      <AddressBalanceChart data={data} height="500px" />
-    </section>
-  );
+  let content = <>Loading...</>;
+
+  if (!isLoading) {
+    if (error) {
+      content = <>Oops, something went wrong.</>;
+    } else {
+      content = <AddressBalanceChart data={data} height="500px" />;
+    }
+  }
+
+  return <section className={styles.container}>{content}</section>;
 }
