@@ -1,7 +1,11 @@
 import { HomeLayout, Layout } from "components";
 import Head from "next/head";
 import { SWRConfig } from "swr";
-import { BtcAddressChartData, ApiEndpoints } from "types";
+import {
+  BtcAddressChartData,
+  ApiEndpoints,
+  BtcAddressesTimePeriod,
+} from "types";
 import { downsampleChartData, loadBtcAddressChartData } from "utils";
 
 interface Props {
@@ -24,7 +28,7 @@ export default function Home({ fallback }: Props) {
 }
 
 export async function getStaticProps() {
-  const chartData = await loadBtcAddressChartData();
+  const chartData = await loadBtcAddressChartData(BtcAddressesTimePeriod.All);
   const downsampledChartData = downsampleChartData(chartData);
   return {
     props: {
