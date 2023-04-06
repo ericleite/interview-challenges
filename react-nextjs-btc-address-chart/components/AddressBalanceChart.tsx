@@ -13,7 +13,7 @@ import {
 import "chartjs-adapter-date-fns";
 import React, { useMemo } from "react";
 import { Line } from "react-chartjs-2";
-import { AddressBalanceChartData } from "types";
+import { BtcAddressChartData } from "types";
 import styles from "./AddressBalanceChart.module.css";
 
 ChartJS.register(
@@ -113,7 +113,7 @@ const COLORS = [
 ];
 
 interface Props {
-  data: AddressBalanceChartData;
+  data: BtcAddressChartData;
   height?: string;
   timeUnit?: TimeUnit;
 }

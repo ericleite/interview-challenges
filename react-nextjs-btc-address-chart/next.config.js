@@ -13,6 +13,7 @@ const nextConfig = {
 
     config.resolve.alias = {
       ...config.resolve.alias,
+      constants: `${__dirname}/constants`,
       types: `${__dirname}/types`,
       utils: `${__dirname}/utils`,
     };

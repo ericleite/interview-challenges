@@ -3,27 +3,21 @@ import fs from "fs";
 import getConfig from "next/config";
 import path from "path";
 import { finished } from "stream/promises";
-import { AddressBalanceChartData, AddressBalanceChartDataKey } from "types";
+import { BtcAddressChartData, BtcAddressChartDataKey, ChartData } from "types";
 // @ts-ignore - No types available for downsample-lttb
 import downsampler from "downsample-lttb";
 
-const MAX_DATA_POINTS = 1000;
-
-const cachedData: AddressBalanceChartData = {
-  labels: [],
-  columns: {
-    [AddressBalanceChartDataKey.Count1K]: [],
-    [AddressBalanceChartDataKey.Count10K]: [],
-    [AddressBalanceChartDataKey.Count100K]: [],
-    [AddressBalanceChartDataKey.Count1M]: [],
-    [AddressBalanceChartDataKey.Count10M]: [],
-  },
-};
-
-export const loadBtcAddressesData = async () => {
-  if (cachedData.labels.length) {
-    return cachedData;
-  }
+export const loadBtcAddressChartData = async () => {
+  const data: BtcAddressChartData = {
+    labels: [],
+    columns: {
+      [BtcAddressChartDataKey.Count1K]: [],
+      [BtcAddressChartDataKey.Count10K]: [],
+      [BtcAddressChartDataKey.Count100K]: [],
+      [BtcAddressChartDataKey.Count1M]: [],
+      [BtcAddressChartDataKey.Count10M]: [],
+    },
+  };
 
   const csvPath = path.join(
     getConfig().serverRuntimeConfig.ROOT_DIR,
@@ -33,7 +27,7 @@ export const loadBtcAddressesData = async () => {
   const sourceParser = fs.createReadStream(csvPath).pipe(
     parse({
       bom: true,
-      columns: ["Time", ...Object.keys(cachedData.columns)],
+      columns: ["Time", ...Object.keys(data.columns)],
       delimiter: "\t",
       from: 2,
       relax_quotes: true,
@@ -47,32 +41,39 @@ export const loadBtcAddressesData = async () => {
       // Ideally, I would restructure this to be a single pass operation
       // However, due to the time constraint, we will have to make due with this
       // At least this O(n * m) operation is only done once due to caching
-      cachedData.labels.push(new Date(record.Time).getTime());
+      data.labels.push(new Date(record.Time).getTime());
 
-      Object.keys(cachedData.columns).forEach((key) => {
-        const dataKey = key as AddressBalanceChartDataKey;
-        cachedData.columns[dataKey].push(record[dataKey]);
+      Object.keys(data.columns).forEach((key) => {
+        const dataKey = key as BtcAddressChartDataKey;
+        data.columns[dataKey].push(record[dataKey]);
       });
     }
   });
 
   await finished(sourceParser);
 
-  // Simplify the data to reduce the number of points
-  // This is done to improve performance of the chart
-  const originalLabels = cachedData.labels;
-  Object.keys(cachedData.columns).forEach((key) => {
-    const dataKey = key as AddressBalanceChartDataKey;
-    const downsampledData: [number, number][] = downsampler.processData(
-      cachedData.columns[dataKey].map((y, i) => [originalLabels[i], y]),
-      // TODO: Make this configurable
-      MAX_DATA_POINTS
+  return data;
+};
+
+export const downsampleChartData = (
+  data: ChartData,
+  maxDataPoints: number = 1000
+) => {
+  const downsampledData: ChartData = {
+    labels: [],
+    columns: {},
+  };
+
+  Object.keys(data.columns).forEach((key) => {
+    const processedData: [number, number][] = downsampler.processData(
+      data.columns[key].map((y, i) => [data.labels[i], y]),
+      maxDataPoints
     );
-    cachedData.columns[dataKey] = downsampledData.map(([, y]) => Math.round(y));
-    cachedData.labels = downsampledData.map(([x]) => x);
+    downsampledData.columns[key] = processedData.map(([, y]) => Math.round(y));
+    downsampledData.labels = processedData.map(([x]) => x);
   });
 
-  return cachedData;
+  return downsampledData;
 };
 
 export const fetcher = (...args: any) =>

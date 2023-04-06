@@ -1,4 +1,6 @@
-export enum AddressBalanceChartDataKey {
+import { ChartData } from "./api";
+
+export enum BtcAddressChartDataKey {
   Count1K = "1K",
   Count10K = "10K",
   Count100K = "100K",
@@ -6,13 +8,6 @@ export enum AddressBalanceChartDataKey {
   Count10M = "10M",
 }
 
-export type AddressBalanceChartData = {
-  columns: {
-    [AddressBalanceChartDataKey.Count1K]: number[];
-    [AddressBalanceChartDataKey.Count10K]: number[];
-    [AddressBalanceChartDataKey.Count100K]: number[];
-    [AddressBalanceChartDataKey.Count1M]: number[];
-    [AddressBalanceChartDataKey.Count10M]: number[];
-  };
-  labels: number[];
-};
+export interface BtcAddressChartData extends ChartData {
+  columns: Record<BtcAddressChartDataKey, number[]>;
+}

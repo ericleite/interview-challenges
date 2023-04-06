@@ -1,19 +1,31 @@
 import { TimeUnit } from "chart.js";
 import clsx from "clsx";
+import { ALLOWED_BTC_ADDRESS_TIME_PERIODS } from "../constants";
 import React from "react";
 import useSWR from "swr";
-import { ApiEndpoints } from "types";
+import { ApiEndpoints, BtcAddressesTimePeriod } from "types";
 import { fetcher } from "utils";
 import AddressBalanceChart from "./AddressBalanceChart";
 import styles from "./HomeLayout.module.css";
 
-const ALLOWED_TIME_UNITS: TimeUnit[] = ["year", "month", "week", "day"];
+const PERIOD_TO_TIME_UNIT: Record<BtcAddressesTimePeriod | string, TimeUnit> = {
+  [BtcAddressesTimePeriod.All]: "year",
+  [BtcAddressesTimePeriod.YTD]: "month", // TODO: Use "week" if < 3 months left in year
+  [BtcAddressesTimePeriod["12M"]]: "month",
+  [BtcAddressesTimePeriod["3M"]]: "week",
+  [BtcAddressesTimePeriod["1M"]]: "day",
+};
 
 export default function HomeLayout() {
-  const [timeUnit, setTimeUnit] = React.useState<TimeUnit>("year");
+  const [selectedPeriod, setSelectedPeriod] =
+    React.useState<BtcAddressesTimePeriod>(BtcAddressesTimePeriod.All);
+  const selectedTimeUnit = PERIOD_TO_TIME_UNIT[selectedPeriod];
 
   // TODO: Make this a reusable hook
-  const { data, error, isLoading } = useSWR(ApiEndpoints.BtcAddresses, fetcher);
+  const { data, error, isLoading } = useSWR(
+    `${ApiEndpoints.BtcAddresses}?period=${selectedPeriod}`,
+    fetcher
+  );
 
   let content = <>Loading...</>;
 
@@ -23,19 +35,26 @@ export default function HomeLayout() {
     } else {
       content = (
         <div className={styles.chartContainer}>
-          <AddressBalanceChart data={data} height="500px" timeUnit={timeUnit} />
+          <AddressBalanceChart
+            data={data}
+            height="500px"
+            timeUnit={selectedTimeUnit}
+          />
           <div className={styles.controls}>
-            {ALLOWED_TIME_UNITS.map((unit) => (
-              <button
-                className={clsx(
-                  styles.button,
-                  timeUnit === unit && styles.active
-                )}
-                onClick={() => setTimeUnit(unit)}
-              >
-                {unit}
-              </button>
-            ))}
+            {ALLOWED_BTC_ADDRESS_TIME_PERIODS.map((period) => {
+              return (
+                <button
+                  key={period}
+                  className={clsx(
+                    styles.button,
+                    period === selectedPeriod && styles.active
+                  )}
+                  onClick={() => setSelectedPeriod(period)}
+                >
+                  {period}
+                </button>
+              );
+            })}
           </div>
         </div>
       );

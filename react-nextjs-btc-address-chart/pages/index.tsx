@@ -1,12 +1,12 @@
 import { HomeLayout, Layout } from "components";
 import Head from "next/head";
 import { SWRConfig } from "swr";
-import { AddressBalanceChartData, ApiEndpoints } from "types";
-import { loadBtcAddressesData } from "utils";
+import { BtcAddressChartData, ApiEndpoints } from "types";
+import { downsampleChartData, loadBtcAddressChartData } from "utils";
 
 interface Props {
   fallback: {
-    [ApiEndpoints.BtcAddresses]: AddressBalanceChartData;
+    [ApiEndpoints.BtcAddresses]: BtcAddressChartData;
   };
 }
 
@@ -24,11 +24,12 @@ export default function Home({ fallback }: Props) {
 }
 
 export async function getStaticProps() {
-  const chartData = await loadBtcAddressesData();
+  const chartData = await loadBtcAddressChartData();
+  const downsampledChartData = downsampleChartData(chartData);
   return {
     props: {
       fallback: {
-        [ApiEndpoints.BtcAddresses]: chartData,
+        [ApiEndpoints.BtcAddresses]: downsampledChartData,
       },
     },
   };

@@ -24,6 +24,7 @@
   cursor: pointer;
   font-size: 0.75rem;
   font-weight: 600;
+  text-transform: uppercase;
   transition: background-color 200ms ease;
 }
 
