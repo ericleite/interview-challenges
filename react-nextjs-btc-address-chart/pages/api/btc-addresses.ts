@@ -5,16 +5,21 @@ import getConfig from "next/config";
 import path from "path";
 import { finished } from "stream/promises";
 
-import {
-  BtcAddressBalanceChartData,
-  BtcAddressBalanceChartDataKey,
-  BtcAddressBalanceChartDataPoint,
-} from "types";
+import { AddressBalanceChartData, AddressBalanceChartDataKey } from "types";
 
-const cachedData: BtcAddressBalanceChartData = [];
+const cachedData: AddressBalanceChartData = {
+  labels: [],
+  columns: {
+    [AddressBalanceChartDataKey.Count1K]: [],
+    [AddressBalanceChartDataKey.Count10K]: [],
+    [AddressBalanceChartDataKey.Count100K]: [],
+    [AddressBalanceChartDataKey.Count1M]: [],
+    [AddressBalanceChartDataKey.Count10M]: [],
+  },
+};
 
 const loadData = async () => {
-  if (cachedData.length) {
+  if (cachedData.labels.length) {
     return cachedData;
   }
 
@@ -26,14 +31,7 @@ const loadData = async () => {
   const sourceParser = fs.createReadStream(csvPath).pipe(
     parse({
       bom: true,
-      columns: [
-        BtcAddressBalanceChartDataKey.Date,
-        BtcAddressBalanceChartDataKey.CountWithBalanceOf1000,
-        BtcAddressBalanceChartDataKey.CountWithBalanceOf10000,
-        BtcAddressBalanceChartDataKey.CountWithBalanceOf100000,
-        BtcAddressBalanceChartDataKey.CountWithBalanceOf1000000,
-        BtcAddressBalanceChartDataKey.CountWithBalanceOf10000000,
-      ],
+      columns: ["Time", ...Object.keys(cachedData.columns)],
       delimiter: "\t",
       from: 2,
       relax_quotes: true,
@@ -41,9 +39,18 @@ const loadData = async () => {
   );
 
   sourceParser.on("readable", () => {
-    let record: BtcAddressBalanceChartDataPoint;
+    let record: any;
     while ((record = sourceParser.read()) !== null) {
-      cachedData.push(record);
+      // Here we build out the data format required by chart library
+      // Ideally, I would have used a different library that doesn't require this format
+      // However, due to the time constraint, we will have to make due with this
+      // At least this O(n * m) operation is only done once due to caching
+      cachedData.labels.push(record.Time);
+
+      Object.keys(cachedData.columns).forEach((key) => {
+        const dataKey = key as AddressBalanceChartDataKey;
+        cachedData.columns[dataKey].push(record[dataKey]);
+      });
     }
   });
 

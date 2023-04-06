@@ -2,6 +2,7 @@ import Head from "next/head";
 import useSWR from "swr";
 import { ApiEndpoints } from "types";
 import { fetcher } from "utils";
+import AddressBalanceChart from "./AddressBalanceChart";
 
 export default function Layout({
   children,
@@ -29,6 +30,7 @@ export default function Layout({
             <p className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
               BTC Address Balances over Time
             </p>
+            <AddressBalanceChart data={data} />
           </div>
         </div>
       </header>

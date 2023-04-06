@@ -1,4 +1,4 @@
-module.exports = {
+const nextConfig = {
   serverRuntimeConfig: {
     ROOT_DIR: __dirname,
   },
@@ -20,3 +20,5 @@ module.exports = {
     return config;
   },
 };
+
+module.exports = nextConfig;

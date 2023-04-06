@@ -1,5 +1,5 @@
 import Head from "next/head";
-import Layout from "../components/layout";
+import { Layout } from "components";
 import { GetStaticProps } from "next";
 
 export default function Home() {
