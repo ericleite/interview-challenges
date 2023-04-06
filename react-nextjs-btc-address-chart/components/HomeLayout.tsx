@@ -10,7 +10,7 @@ import styles from "./HomeLayout.module.css";
 
 const PERIOD_TO_TIME_UNIT: Record<BtcAddressesTimePeriod | string, TimeUnit> = {
   [BtcAddressesTimePeriod.All]: "year",
-  [BtcAddressesTimePeriod.YTD]: "month", // TODO: Use "week" if < 3 months left in year
+  [BtcAddressesTimePeriod.YTD]: "week", // TODO: Use "month" if > 3 months left in year (or "day" if > 1 month left in year)
   [BtcAddressesTimePeriod["12M"]]: "month",
   [BtcAddressesTimePeriod["3M"]]: "week",
   [BtcAddressesTimePeriod["1M"]]: "day",

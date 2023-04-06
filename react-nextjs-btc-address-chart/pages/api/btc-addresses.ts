@@ -1,26 +1,41 @@
+import { ALLOWED_BTC_ADDRESS_TIME_PERIODS } from "../../constants";
 import { NextApiRequest, NextApiResponse } from "next";
-import { BtcAddressChartData, BtcAddressChartDataKey } from "types";
+import { BtcAddressChartData, BtcAddressesTimePeriod } from "types";
 import { downsampleChartData, loadBtcAddressChartData } from "utils";
 
-let chartDataCache: BtcAddressChartData = {
-  labels: [],
-  columns: {
-    [BtcAddressChartDataKey.Count1K]: [],
-    [BtcAddressChartDataKey.Count10K]: [],
-    [BtcAddressChartDataKey.Count100K]: [],
-    [BtcAddressChartDataKey.Count1M]: [],
-    [BtcAddressChartDataKey.Count10M]: [],
-  },
-};
+let chartDataCache: Record<BtcAddressesTimePeriod, BtcAddressChartData>;
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
+  const { period } = req.query as { period: BtcAddressesTimePeriod };
+
+  if (!period) {
+    res.status(400).json({
+      message: "Missing period query parameter.",
+    });
+    return;
+  }
+
+  if (!ALLOWED_BTC_ADDRESS_TIME_PERIODS.includes(period)) {
+    res.status(400).json({
+      message: `Invalid period. Must be one of [${ALLOWED_BTC_ADDRESS_TIME_PERIODS.join(
+        "|"
+      )}]`,
+    });
+    return;
+  }
+
+  if (!chartDataCache) {
+    chartDataCache = {} as Record<BtcAddressesTimePeriod, BtcAddressChartData>;
+  }
+
   try {
-    if (!chartDataCache.labels.length) {
-      const chartData = await loadBtcAddressChartData();
-      const downsampledChartData = downsampleChartData(chartData);
-      chartDataCache = downsampledChartData;
+    if (!chartDataCache[period]) {
+      const chartDataForPeriod = await loadBtcAddressChartData(period);
+      const downsampledChartDataForPeriod =
+        downsampleChartData(chartDataForPeriod);
+      chartDataCache[period] = downsampledChartDataForPeriod;
     }
-    res.status(200).json(chartDataCache);
+    res.status(200).json(chartDataCache[period]);
   } catch (error) {
     res.status(500).json({
       error,
