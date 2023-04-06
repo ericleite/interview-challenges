@@ -7,7 +7,7 @@ import { AddressBalanceChartData, AddressBalanceChartDataKey } from "types";
 // @ts-ignore - No types available for downsample-lttb
 import downsampler from "downsample-lttb";
 
-const MAX_DATA_POINTS = 300;
+const MAX_DATA_POINTS = 1000;
 
 const cachedData: AddressBalanceChartData = {
   labels: [],

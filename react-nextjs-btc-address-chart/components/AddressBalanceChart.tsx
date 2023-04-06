@@ -6,6 +6,7 @@ import {
   LinearScale,
   PointElement,
   TimeScale,
+  TimeUnit,
   Title,
   Tooltip,
 } from "chart.js";
@@ -17,21 +18,22 @@ import styles from "./AddressBalanceChart.module.css";
 
 ChartJS.register(
   CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
   Legend,
-  TimeScale
+  LinearScale,
+  LineElement,
+  PointElement,
+  TimeScale,
+  Title,
+  Tooltip
 );
 
-const chartOptions = {
+const DEFAULT_CHART_OPTIONS = {
   responsive: true,
   maintainAspectRatio: false,
   plugins: {
     legend: {
       labels: {
+        padding: 16,
         pointStyle: "line",
         usePointStyle: true,
       },
@@ -84,24 +86,17 @@ const chartOptions = {
         display: false,
       },
       type: "time" as const,
-      time: {
-        unit: "year" as const,
-      },
     },
     y: {
       border: {
         display: false,
       },
       ticks: {
-        callback: function (value: string | number) {
-          if (typeof value === "number") {
-            return new Intl.NumberFormat("en-US", {
-              notation: "compact",
-              compactDisplay: "short",
-              minimumSignificantDigits: 1,
-              maximumSignificantDigits: 3,
-            }).format(value);
-          }
+        format: {
+          notation: "compact" as const,
+          compactDisplay: "short" as const,
+          minimumSignificantDigits: 1,
+          maximumSignificantDigits: 3,
         },
       },
     },
@@ -109,7 +104,7 @@ const chartOptions = {
 };
 
 // TODO: Generate these dynamically
-const colors = [
+const COLORS = [
   "rgba(255, 99, 132, 1)",
   "rgba(54, 162, 235, 1)",
   "rgba(255, 206, 86, 1)",
@@ -120,9 +115,10 @@ const colors = [
 interface Props {
   data: AddressBalanceChartData;
   height?: string;
+  timeUnit?: TimeUnit;
 }
 
-export default function AddressBalanceChart({ data, height }: Props) {
+export default function AddressBalanceChart({ data, height, timeUnit }: Props) {
   const chartData = useMemo(() => {
     return {
       labels: data?.labels || [],
@@ -132,12 +128,27 @@ export default function AddressBalanceChart({ data, height }: Props) {
           data: values,
           fill: false,
           pointStyle: false as const,
-          borderColor: colors[index % colors.length],
+          borderColor: COLORS[index % COLORS.length],
           borderWidth: 2,
         })
       ),
     };
   }, [data]);
+
+  const chartOptions = useMemo(() => {
+    return {
+      ...DEFAULT_CHART_OPTIONS,
+      scales: {
+        ...DEFAULT_CHART_OPTIONS.scales,
+        x: {
+          ...DEFAULT_CHART_OPTIONS.scales.x,
+          time: {
+            unit: timeUnit,
+          },
+        },
+      },
+    };
+  }, [timeUnit]);
 
   const containerStyle = useMemo(() => {
     return {
