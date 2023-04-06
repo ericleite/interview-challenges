@@ -44,7 +44,7 @@ export const loadBtcAddressesData = async () => {
     let record: any;
     while ((record = sourceParser.read()) !== null) {
       // Here we build out the data format required by chart library
-      // Ideally, I would have used a different library that doesn't require this format
+      // Ideally, I would restructure this to be a single pass operation
       // However, due to the time constraint, we will have to make due with this
       // At least this O(n * m) operation is only done once due to caching
       cachedData.labels.push(new Date(record.Time).getTime());
@@ -68,7 +68,7 @@ export const loadBtcAddressesData = async () => {
       // TODO: Make this configurable
       MAX_DATA_POINTS
     );
-    cachedData.columns[dataKey] = downsampledData.map(([, y]) => y);
+    cachedData.columns[dataKey] = downsampledData.map(([, y]) => Math.round(y));
     cachedData.labels = downsampledData.map(([x]) => x);
   });
 
