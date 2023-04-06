@@ -48,7 +48,8 @@ const chartOptions = {
         },
         labelPointStyle: function () {
           return {
-            pointStyle: "line",
+            pointStyle: "line" as const,
+            rotation: 0,
           };
         },
         label: function (context: any) {
@@ -92,13 +93,15 @@ const chartOptions = {
         display: false,
       },
       ticks: {
-        callback: function (value: number) {
-          return new Intl.NumberFormat("en-US", {
-            notation: "compact",
-            compactDisplay: "short",
-            minimumSignificantDigits: 1,
-            maximumSignificantDigits: 3,
-          }).format(value);
+        callback: function (value: string | number) {
+          if (typeof value === "number") {
+            return new Intl.NumberFormat("en-US", {
+              notation: "compact",
+              compactDisplay: "short",
+              minimumSignificantDigits: 1,
+              maximumSignificantDigits: 3,
+            }).format(value);
+          }
         },
       },
     },
