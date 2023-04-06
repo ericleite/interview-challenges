@@ -14,6 +14,7 @@ import "chartjs-adapter-date-fns";
 import React, { useMemo } from "react";
 import { Line } from "react-chartjs-2";
 import { BtcAddressChartData } from "types";
+import { DEFAULT_LINE_CHART_OPTIONS } from "../constants";
 import styles from "./AddressBalanceChart.module.css";
 
 ChartJS.register(
@@ -26,82 +27,6 @@ ChartJS.register(
   Title,
   Tooltip
 );
-
-const DEFAULT_CHART_OPTIONS = {
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins: {
-    legend: {
-      labels: {
-        padding: 16,
-        pointStyle: "line",
-        usePointStyle: true,
-      },
-      position: "top" as const,
-    },
-    tooltip: {
-      callbacks: {
-        title: function (context: any) {
-          return new Intl.DateTimeFormat("en-US", {
-            month: "numeric",
-            day: "numeric",
-            year: "numeric",
-          }).format(new Date(context[0].parsed.x));
-        },
-        labelPointStyle: function () {
-          return {
-            pointStyle: "line" as const,
-            rotation: 0,
-          };
-        },
-        label: function (context: any) {
-          let label = context.dataset.label || "";
-
-          if (label) {
-            label += ": ";
-          }
-
-          if (context.parsed.y !== null) {
-            label += new Intl.NumberFormat("en-US", {
-              notation: "compact",
-              compactDisplay: "short",
-              minimumSignificantDigits: 1,
-              maximumSignificantDigits: 3,
-            }).format(context.parsed.y);
-          }
-
-          return label;
-        },
-      },
-      intersect: false,
-      usePointStyle: true,
-    },
-  },
-  scales: {
-    x: {
-      border: {
-        display: false,
-      },
-      grid: {
-        display: false,
-      },
-      type: "time" as const,
-    },
-    y: {
-      border: {
-        display: false,
-      },
-      ticks: {
-        format: {
-          notation: "compact" as const,
-          compactDisplay: "short" as const,
-          minimumSignificantDigits: 1,
-          maximumSignificantDigits: 3,
-        },
-      },
-    },
-  },
-};
 
 // TODO: Generate these dynamically
 const COLORS = [
@@ -137,11 +62,11 @@ export default function AddressBalanceChart({ data, height, timeUnit }: Props) {
 
   const chartOptions = useMemo(() => {
     return {
-      ...DEFAULT_CHART_OPTIONS,
+      ...DEFAULT_LINE_CHART_OPTIONS,
       scales: {
-        ...DEFAULT_CHART_OPTIONS.scales,
+        ...DEFAULT_LINE_CHART_OPTIONS.scales,
         x: {
-          ...DEFAULT_CHART_OPTIONS.scales.x,
+          ...DEFAULT_LINE_CHART_OPTIONS.scales.x,
           time: {
             unit: timeUnit,
           },
