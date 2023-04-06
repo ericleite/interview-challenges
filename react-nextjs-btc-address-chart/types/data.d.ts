@@ -14,5 +14,5 @@ export type AddressBalanceChartData = {
     [AddressBalanceChartDataKey.Count1M]: number[];
     [AddressBalanceChartDataKey.Count10M]: number[];
   };
-  labels: string[];
+  labels: number[];
 };

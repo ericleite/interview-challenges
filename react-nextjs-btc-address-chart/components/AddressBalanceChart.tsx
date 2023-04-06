@@ -5,9 +5,11 @@ import {
   LineElement,
   LinearScale,
   PointElement,
+  TimeScale,
   Title,
   Tooltip,
 } from "chart.js";
+import "chartjs-adapter-date-fns";
 import React, { useMemo } from "react";
 import { Line } from "react-chartjs-2";
 import { AddressBalanceChartData } from "types";
@@ -20,26 +22,37 @@ ChartJS.register(
   LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  TimeScale
 );
 
-const options = {
+const chartOptions = {
   responsive: true,
+  maintainAspectRatio: false,
   plugins: {
     legend: {
+      labels: {
+        usePointStyle: true,
+      },
       position: "top" as const,
     },
-    title: {
-      display: false,
+  },
+  scales: {
+    x: {
+      type: "time" as const,
+      time: {
+        unit: "year" as const,
+      },
     },
   },
 };
 
 interface Props {
   data: AddressBalanceChartData;
+  height?: string;
 }
 
-export default function AddressBalanceChart({ data }: Props) {
+export default function AddressBalanceChart({ data, height }: Props) {
   const chartData = useMemo(() => {
     return {
       labels: data?.labels || [],
@@ -47,13 +60,20 @@ export default function AddressBalanceChart({ data }: Props) {
         label: key,
         data: values,
         fill: false,
+        pointStyle: false as const,
       })),
     };
   }, [data]);
 
+  const containerStyle = useMemo(() => {
+    return {
+      height,
+    };
+  }, [height]);
+
   return (
-    <div className={styles.container}>
-      <Line options={options} data={chartData} />
+    <div className={styles.container} style={containerStyle}>
+      <Line options={chartOptions} data={chartData} />
     </div>
   );
 }

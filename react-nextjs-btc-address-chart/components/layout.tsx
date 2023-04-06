@@ -1,18 +1,6 @@
 import Head from "next/head";
-import useSWR from "swr";
-import { ApiEndpoints } from "types";
-import { fetcher } from "utils";
-import AddressBalanceChart from "./AddressBalanceChart";
 
-export default function Layout({
-  children,
-}: {
-  children: React.ReactNode;
-  home?: boolean;
-}) {
-  // TODO: Make this a reusable hook
-  const { data, error, isLoading } = useSWR(ApiEndpoints.BtcAddresses, fetcher);
-
+export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div>
       <Head>
@@ -30,7 +18,6 @@ export default function Layout({
             <p className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
               BTC Address Balances over Time
             </p>
-            <AddressBalanceChart data={data} />
           </div>
         </div>
       </header>

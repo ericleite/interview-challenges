@@ -1,16 +1,14 @@
-import Head from "next/head";
-import { Layout } from "components";
+import { HomeLayout, Layout } from "components";
 import { GetStaticProps } from "next";
+import Head from "next/head";
 
 export default function Home() {
   return (
-    <Layout home>
+    <Layout>
       <Head>
         <title>BTC Address Balances over Time</title>
       </Head>
-      <section>
-        <div className="max-w-2xl mx-auto p-8 text-center">Chart goes here</div>
-      </section>
+      <HomeLayout />
     </Layout>
   );
 }
