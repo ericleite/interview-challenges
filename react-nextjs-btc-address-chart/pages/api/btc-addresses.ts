@@ -4,8 +4,11 @@ import { NextApiRequest, NextApiResponse } from "next";
 import getConfig from "next/config";
 import path from "path";
 import { finished } from "stream/promises";
-
 import { AddressBalanceChartData, AddressBalanceChartDataKey } from "types";
+// @ts-ignore - No types available for downsample-lttb
+import downsampler from "downsample-lttb";
+
+const MAX_DATA_POINTS = 300;
 
 const cachedData: AddressBalanceChartData = {
   labels: [],
@@ -45,7 +48,7 @@ const loadData = async () => {
       // Ideally, I would have used a different library that doesn't require this format
       // However, due to the time constraint, we will have to make due with this
       // At least this O(n * m) operation is only done once due to caching
-      cachedData.labels.push(record.Time);
+      cachedData.labels.push(new Date(record.Time).getTime());
 
       Object.keys(cachedData.columns).forEach((key) => {
         const dataKey = key as AddressBalanceChartDataKey;
@@ -55,6 +58,20 @@ const loadData = async () => {
   });
 
   await finished(sourceParser);
+
+  // Simplify the data to reduce the number of points
+  // This is done to improve performance of the chart
+  const originalLabels = cachedData.labels;
+  Object.keys(cachedData.columns).forEach((key) => {
+    const dataKey = key as AddressBalanceChartDataKey;
+    const downsampledData: [number, number][] = downsampler.processData(
+      cachedData.columns[dataKey].map((y, i) => [originalLabels[i], y]),
+      // TODO: Make this configurable
+      MAX_DATA_POINTS
+    );
+    cachedData.columns[dataKey] = downsampledData.map(([, y]) => y);
+    cachedData.labels = downsampledData.map(([x]) => x);
+  });
 
   return cachedData;
 };

@@ -7,8 +7,10 @@
   },
   "dependencies": {
     "chart.js": "^4.2.1",
+    "chartjs-adapter-date-fns": "^3.0.0",
     "csv-parse": "^5.3.6",
     "date-fns": "^2.29.3",
+    "downsample-lttb": "^0.0.1",
     "next": "^13.1.6",
     "react": "18.2.0",
     "react-chartjs-2": "^5.2.0",
