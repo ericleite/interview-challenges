@@ -18,15 +18,15 @@ export const downsampleChartData = (
 ) => {
   const downsampledData: ChartData = {
     labels: [],
-    columns: {},
+    datasets: {},
   };
 
-  Object.keys(data.columns).forEach((key) => {
+  Object.keys(data.datasets).forEach((key) => {
     const processedData: [number, number][] = downsampler.processData(
-      data.columns[key].map((y, i) => [data.labels[i], y]),
+      data.datasets[key].map((y, i) => [data.labels[i], y]),
       maxDataPoints
     );
-    downsampledData.columns[key] = processedData.map(([, y]) => Math.round(y));
+    downsampledData.datasets[key] = processedData.map(([, y]) => Math.round(y));
     downsampledData.labels = processedData.map(([x]) => x);
   });
 
@@ -41,7 +41,7 @@ export const loadBtcAddressChartData = async (
 ) => {
   const data: BtcAddressChartData = {
     labels: [],
-    columns: {
+    datasets: {
       [BtcAddressChartDataKey.Count1K]: [],
       [BtcAddressChartDataKey.Count10K]: [],
       [BtcAddressChartDataKey.Count100K]: [],
@@ -59,7 +59,7 @@ export const loadBtcAddressChartData = async (
   const sourceParser = fs.createReadStream(csvPath).pipe(
     parse({
       bom: true,
-      columns: [timeColumnKey, ...Object.keys(data.columns)],
+      columns: [timeColumnKey, ...Object.keys(data.datasets)],
       delimiter: "\t",
       from: 2,
       on_record: (record) => {
@@ -76,9 +76,9 @@ export const loadBtcAddressChartData = async (
     let record: any;
     while ((record = sourceParser.read()) !== null) {
       data.labels.push(new Date(record[timeColumnKey]).getTime());
-      Object.keys(data.columns).forEach((key) => {
+      Object.keys(data.datasets).forEach((key) => {
         const dataKey = key as BtcAddressChartDataKey;
-        data.columns[dataKey].push(record[dataKey]);
+        data.datasets[dataKey].push(record[dataKey]);
       });
     }
   });

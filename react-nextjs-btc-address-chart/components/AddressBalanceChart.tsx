@@ -53,7 +53,7 @@ export default function AddressBalanceChart({
   const chartData = useMemo(() => {
     return {
       labels: data?.labels || [],
-      datasets: Object.entries(data?.columns || {}).map(
+      datasets: Object.entries(data?.datasets || {}).map(
         ([key, values], index) => ({
           label: `>$${key}`,
           data: values,

@@ -12,5 +12,5 @@ export enum BtcAddressesTimePeriod {
 
 export interface ChartData {
   labels: number[];
-  columns: Record<string, number[]>;
+  datasets: Record<string, number[]>;
 }

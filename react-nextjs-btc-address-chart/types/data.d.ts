@@ -9,5 +9,5 @@ export enum BtcAddressChartDataKey {
 }
 
 export interface BtcAddressChartData extends ChartData {
-  columns: Record<BtcAddressChartDataKey, number[]>;
+  datasets: Record<BtcAddressChartDataKey, number[]>;
 }
